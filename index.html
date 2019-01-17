@@ -6,20 +6,35 @@
 		<script src="https://wgld.org/j/minMatrix.js" type="text/javascript"></script>
 
 		<script id="vs" type="x-shader/x-vertex">
-attribute vec2 position;
-attribute vec4 color;
+attribute vec4 col0;
+attribute vec2 pos0;
+attribute vec4 col1;
+attribute vec2 pos1;
 uniform   mat4  mvpMatrix;
 uniform   float size;
 uniform vec2 xy_data;
+uniform float edir;
+uniform int btype;
+uniform vec4 color;
 varying   vec4  vColor;
 varying   float  vSize;
 varying   vec2  vXY_data;
-
 void main(void){
-    vColor    = color;
     vSize       = size;
     vXY_data = xy_data;
-    gl_Position = mvpMatrix * vec4(xy_data+position*size,0.0, 1.0);
+	mat2 rotate = mat2(cos(edir),sin(edir),sin(edir)*-1.0,cos(edir));
+	vec2 posr;
+	vec4 colr;
+	if(btype == 0) {
+		posr = pos0;
+		colr    = col0;
+	} else if(btype == 1) {
+		posr = pos1;
+		colr    = col1;
+	}
+	vColor = colr + color;
+	vec2 result = rotate * posr;
+    gl_Position = mvpMatrix * vec4(xy_data+result*size,0.0, 1.0);
 }
 		</script>
 
