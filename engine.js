@@ -157,7 +157,7 @@ onload = function(){
     color[1] =[];
     for(let i = 0; i < 18; i++) {
         position[1].push(Math.cos(Math.PI/180*i*20),Math.sin(Math.PI/180*i*20));
-        color[1].push(0.0,0.0,0.0,0.0);
+        color[1].push(0.5,0.0,0.3,0.5);
         
         position[1].push(0,0);
         color[1].push(0.0,0.0,0.0,0.0);
@@ -200,17 +200,13 @@ onload = function(){
     let e = 0;
     let d = 0;
     let n = 0;
-    for(i = 0; i < 10; i++) {
-            n++;
-            obj[n] = ({dir:e*10 + i*36,acc:0.01,speed:0.1,size:3})
-    }
     setInterval(() => {
         e++;
         for(i = 0; i < 10; i++) {
             n++;
-            obj[n] = ({dir:e*10 + i*36,acc:0.01,speed:0.1,size:3})
+            obj[n] = ({dir:e*10 + i*36,acc:0.01,speed:0.1,size:3,btype:1,color:[0.0,0.0,0.0,-0.5]})
         }
-    } ,100000)
+    } ,100)
 
     setInterval(() => {
         d-=10;
@@ -218,7 +214,7 @@ onload = function(){
             n++;
             obj[n] = ({dir:d + i*-36,acc:0.02,speed:0,btype:1})
         }
-    } ,200000)
+    } ,200)
     let count = 0;
     let delete_ = [];
     let exData
