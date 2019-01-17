@@ -136,6 +136,8 @@ onload = function(){
     attLocation[1] = gl.getAttribLocation(prg, 'col0');
     attLocation[2] = gl.getAttribLocation(prg, 'pos1');
     attLocation[3] = gl.getAttribLocation(prg, 'col1');
+    attLocation[4] = gl.getAttribLocation(prg, 'pos2');
+    attLocation[5] = gl.getAttribLocation(prg, 'col2');
 
     // attributeの要素数を配列に格納
     let attStride = new Array(2);
@@ -143,6 +145,8 @@ onload = function(){
     attStride[1] = 4;
     attStride[2] = 2;
     attStride[3] = 4;
+    attStride[4] = 2;
+    attStride[5] = 4;
 
     // 頂点属性を格納する配列
     let position = [];
@@ -204,7 +208,7 @@ onload = function(){
         e++;
         for(i = 0; i < 10; i++) {
             n++;
-            obj[n] = ({dir:e*10 + i*36,acc:0.01,speed:0.1,size:3,btype:1,color:[0.0,0.0,0.0,-0.5]})
+            obj[n] = ({dir:e*10 + i*36,acc:0.01,speed:0.1,size:3,btype:1,color:[-0.5,-0.3,0.8,-0.5]})
         }
     } ,100)
 
