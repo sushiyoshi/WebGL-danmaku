@@ -113,6 +113,7 @@ onload = () => {
 
             gl.bindBuffer(gl.ARRAY_BUFFER, null);
         }
+        
     }
     const ex = (object,object_2) =>  {
         for(let k in object) {
@@ -148,10 +149,10 @@ onload = () => {
             return Math.abs(obj.x - exData.x) < 5 || Math.abs(obj.y - exData.y) < 5;
             break;
             case 3:
-            return distance(exData.x,exData.y,obj.x,obj.y) < obj.r;   
+            return distance(exData.x,exData.y,obj.x,obj.y) < obj.r;
             break;
             case 4:
-            return distance(exData.x,exData.y,obj.x,obj.y) > obj.r;   
+            return distance(exData.x,exData.y,obj.x,obj.y) > obj.r;
             break;
             case 5:
             return address[`${exData.parent}-${exData.bNum}`];
@@ -159,15 +160,15 @@ onload = () => {
     }
     const addProcessing = async (obj,ex,sec) => {
         //if(sec != 0 ) await sleepByPromise(sec);
-        const element = this.element; 
-        const element_def = {'count':10,'rota':36,'x':ex['x'],'x':ex['y'],'color':ex['color'],'st_dir':ex.dir,'size':ex.size,'bNum':ex.count,'parent':`${ex.label}-${ex.index}`,'addeess':null};
+        const element = ['count','rota','x','y','color','size','st_dir','type','shotter','parent','bNum','edir_sp','speed','acc','type','hirahira','chCo','func'];
+        const element_def = {'count':10,'rota':36,'x':ex['x'],'y':ex['y'],'color':ex['color'],'st_dir':ex.dir,'size':ex.size,'bNum':ex.count,'parent':`${ex.label}-${ex.index}`,'addeess':null};
         let shot_obj = {};
-        element.forEach((v,i,ar) => {
-            obj[v] === undefined ? shot_obj[v] = element_obj[v] : shot_obj[v] = obj[v];
-        });
+        for(let t of element) {
+          obj[t] === undefined ? shot_obj[t] = element_def[t] : shot_obj[t] = obj[t];
+        }
         if(shot_obj['address'] != null) {
             ex['address'] = `${shot_obj['parent']}-${shot_obj['bNum']}`;
-            address[`${shot_obj['parent']}-${shot_obj['bNum']}`] = false;
+            address[`${shot_obj['parent']}-${shot_obj['bNum']}`] = {re:false,'condition':0,''};
         }
         let direc = shot_obj['st_dir'];
         for(i = 0; i < shot_obj['count']; i++) {
@@ -227,25 +228,26 @@ onload = () => {
         constructor(array,def,element) {
             this.array = array;
             this.def = def;
-            this.element = def;
+            this.element = element;
         }
         move (obj,dis,dir) {
             obj.x += Math.cos(dir/180*Math.PI)*dis;
             obj.y += Math.sin(dir/180*Math.PI)*dis;
         }
         loop(obj) {
-            Object.keys(this.array).forEach((value,index,array) => {
-                this.processing(value,obj);
-            });
-            delete_.forEach((value,index,array) => {
-                delete this.array[value];
-            })
+            for(let value of Object.keys(this.array)) {
+              this.processing(value,obj);
+            }
+
+            for(let value of delete_) {
+              delete this.array[value];
+            }
         }
         processing(value,exData) {
             exData = JSON.parse(JSON.stringify(this.def));
             ex(this.array[value],exData);
             set_attribute(vbo_obj[exData.type],attLocation, attStride);
-            
+
             /*if(bty != exData.type) {
                 set_attribute(vbo_obj[exData.type],attLocation, attStride);
             }*/
@@ -268,19 +270,23 @@ onload = () => {
             this.drawing(exData);
             typeof exData.func !== 'undefined' && exData.func();
             if(exData['shotter'] != null) {
-                if(shot_cond(exData['shotter'],exData,exData['shotter']['type']) ){                 
+                if(shot_cond(exData['shotter'],exData,exData['shotter']['type']) ){
                     this.add(exData['shotter']['info'],exData,exData['shotter']['func'])
                 }
             }
+
             if( condition(exData['address']['condition'],exData['address'],exData)) {
+
             }
             if( condition(exData['chCo'][tn]['cond'],exData['chCo'][tn],exData) ) {
                 let element_obj = ['dir','dir_sp','edir','edir_sp','speed','acc','size','color','shotter'];
-                element_obj.forEach((v,i,ar) => {
-                    if(exData['chCo'][tn][v] !== undefined ) exData[v] = exData['chCo'][tn][v];
-                });
+
+                for(let v of element_obj) {
+                  if(exData['chCo'][tn][v] !== undefined ) exData[v] = exData['chCo'][tn][v];
+
+                }
                 exData['chCo'][tn+1] === undefined || this.delete_cond() ? delete_.push(value) : tn++;
-            } 
+            }
             bty = exData.type;
             exData.tn=tn;
             this.array[value] = JSON.parse(JSON.stringify(exData));
@@ -293,9 +299,9 @@ onload = () => {
         special() {
         }
         add(obj = [{}],exData,func = null) {
-            obj.forEach((v)=>{
-                func != null ? func(v,exData,v.sec) : addProcessing(v,exData,v.sec);
-            });
+            for(let v of obj) {
+              func != null ? func(v,exData,v.sec) : addProcessing(v,exData,v.sec);
+            }
         }
     }
     class bulletdraw extends drawAll {
@@ -383,7 +389,7 @@ onload = () => {
             for(i = 0; i < 36; i++) {
                 obj1.push(Math.cos(Math.PI/180*i*10),Math.sin(Math.PI/180*i*10));
                 obj2.push(0.0,0.5,0.8,0.5);
-                
+
                 obj1.push(0,0);
                 obj2.push(0.0,0.0,0.0,0.0);
             }
@@ -465,39 +471,42 @@ onload = () => {
     let e = 0;
     let d = 0;
     let n = 0;
-    /*for(i = 0; i < 10; i++) {
+    /*
+    for(i = 0; i < 10; i++) {
         n++;
         bullet_obj[n] = ({dir:i*36,acc:0.004,speed:0.5,size:4,color:[0.2,0.0,0.2,0.0],edir_sp:1,type:0,chCo:[{cond:1,interval:100,speed:0},{cond:0}]})
     }*/
-/*
+
     setInterval(() => {
         e++;
         for(i = 0; i < 10; i++) {
             n++;
-            bullet_obj[n] = ({shotter:{interval:200,info:[{count:3,rota:120,acc:0.3,type:0,st_dir:rand(0,360)}] },chCo:[{cond:1,interval:100,speed:0,color:[0.0,0.0,0.0,-0.2],dir_ac:0.1},{cond:0}] ,x:Math.cos(n*0.01)*0.4,y:Math.sin(n*0.01)*0.4,dir:e*10 + i*36,acc:0.01,speed:0.1,size:5,type:1,edir_sp:1,color:[0,0.4,0,0]})
+            bullet_obj[n] = ({shotter:{interval:200,info:[{count:3,rota:120,acc:0.00,type:5,size:8,st_dir:rand(0,360)}] },chCo:[{cond:1,interval:100,speed:0,color:[0.0,0.0,0.0,-0.2],dir_ac:0.1},{cond:0}] ,x:Math.cos(n*0.01)*0.4,y:Math.sin(n*0.01)*0.4,dir:e*10 + i*36,acc:0.01,speed:0.1,size:5,type:1,edir_sp:1,color:[0,0.4,0,0]})
         }
-    } ,150);
-    */
-/*
+    } ,450);
+
+
     setInterval(() => {
         d-=10;
         for(i = 0; i < 10; i++) {
             n++;
             bullet_obj[n] = ({x:Math.sin(n*0.03)*0.4,y:Math.cos(n*0.03)*0.4,dir:d + i*-36,acc:0.01,speed:0,type:2,dir_ap:1,edir_sp:1})
         }
-    } ,250);
+    } ,500);
+    /*
     setInterval(() => {
         for(i = 0; i < 10; i++) {
             n++;
-            bullet_obj[n] = ({,dir:e*10 + i*36,acc:0.004,speed:3,acc:-0.1,size:4,color:[0.2,0.0,0.2,0.0],edir_sp:1,type:0,chCo:[{cond:4,x:0,y:0,r:0.4,acc:0.01},{cond:0}] })
+            bullet_obj[n] = ({shotter:{interval:150,info:[{count:2,rota:180}] },dir:e*10 + i*36,acc:0.004,speed:3,acc:-0.1,size:4,color:[0.2,0.0,0.2,0.0],edir_sp:1,type:0,chCo:[{cond:4,x:0,y:0,r:0.4,acc:0.01},{cond:0}] })
         }
     } ,1000);*/
+    /*
     setInterval(() => {
         e++;
         for(i = 0; i < 10; i++) {
             bulletAdd({shotter:{interval:100,info:{} }})
         }
-    } ,150);
+    } ,150);*/
 
     let count = 0;
     let delete_ = [];
@@ -542,7 +551,7 @@ onload = () => {
         delete_ = [];
         // コンテキストの再描画
         gl.flush();
-        console.log(player.x,player.y)
+        //console.log(player.x,player.y)
     }
     (function animloop(){
         all();
