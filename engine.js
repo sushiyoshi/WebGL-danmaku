@@ -113,7 +113,7 @@ onload = () => {
 
             gl.bindBuffer(gl.ARRAY_BUFFER, null);
         }
-        
+
     }
     const ex = (object,object_2) =>  {
         for(let k in object) {
@@ -158,24 +158,32 @@ onload = () => {
             return address[`${exData.parent}-${exData.bNum}`];
         }
     }
+    const elementUpdate = (obj,ex,re) => {
+      const element = ['count','rota','x','y','color','size','st_dir','type','shotter','parent','bNum','edir_sp','speed','acc','type','hirahira','chCo','func'];
+      const element_def = {'count':10,'rota':36,'x':ex['x'],'y':ex['y'],'color':ex['color'],'st_dir':ex.dir,'size':ex.size,'bNum':ex.count,'parent':`${ex.label}-${ex.index}`,'addeess':null};
+
+      for(let t of element) {
+        obj[t] === undefined ? re = element_def[t] : re = obj[t];
+      }
+    }
+    const Add_count = (shot_obj) => {
+      let direc = shot_obj['st_dir'];
+      for(i = 0; i < shot_obj['count']; i++) {
+          shot_obj['dir'] = direc;
+          direc += shot_obj['rota'];
+          bulletAdd(bullet_obj,JSON.parse(JSON.stringify(shot_obj)))
+      }
+    }
     const addProcessing = async (obj,ex,sec) => {
         //if(sec != 0 ) await sleepByPromise(sec);
-        const element = ['count','rota','x','y','color','size','st_dir','type','shotter','parent','bNum','edir_sp','speed','acc','type','hirahira','chCo','func'];
-        const element_def = {'count':10,'rota':36,'x':ex['x'],'y':ex['y'],'color':ex['color'],'st_dir':ex.dir,'size':ex.size,'bNum':ex.count,'parent':`${ex.label}-${ex.index}`,'addeess':null};
         let shot_obj = {};
-        for(let t of element) {
-          obj[t] === undefined ? shot_obj[t] = element_def[t] : shot_obj[t] = obj[t];
-        }
+        elementUpdate(obj,ex,shot_obj);
         if(shot_obj['address'] != null) {
+            shot_obj['Is_adr'] = true;
             ex['address'] = `${shot_obj['parent']}-${shot_obj['bNum']}`;
-            address[`${shot_obj['parent']}-${shot_obj['bNum']}`] = {re:false,'condition':0,''};
+            address[`${shot_obj['parent']}-${shot_obj['bNum']}`] = {re:false,'cond':shot_obj['address']};
         }
-        let direc = shot_obj['st_dir'];
-        for(i = 0; i < shot_obj['count']; i++) {
-            shot_obj['dir'] = direc;
-            direc += shot_obj['rota'];
-            bulletAdd(bullet_obj,JSON.parse(JSON.stringify(shot_obj)))
-        }
+        Add_count(shot_obj);
     }
     const shot_cond = (obj,exData,type) => {
         switch(type) {
@@ -242,6 +250,24 @@ onload = () => {
             for(let value of delete_) {
               delete this.array[value];
             }
+            for(let value of Object.keys(address)) {
+              this.address_processing(address[value],address);
+            }
+        }
+        address_processing(value,address) {
+          let obj = address['value'];
+          let ret = () => {
+            switch(obj['cond']['type']) {
+              default:
+              obj['cond']['count']--;
+              return obj['cond']['count'];
+              break;
+              case 1:
+              return address[obj['cond']['parent']]['re'];
+              break;
+            }
+          }
+          obj['re'] = ret;
         }
         processing(value,exData) {
             exData = JSON.parse(JSON.stringify(this.def));
@@ -274,9 +300,8 @@ onload = () => {
                     this.add(exData['shotter']['info'],exData,exData['shotter']['func'])
                 }
             }
-
-            if( condition(exData['address']['condition'],exData['address'],exData)) {
-
+            if( exData.Is_adr && address[`${exData.parent}-${exData.bNum}`]['re']) {
+              console.log('address');
             }
             if( condition(exData['chCo'][tn]['cond'],exData['chCo'][tn],exData) ) {
                 let element_obj = ['dir','dir_sp','edir','edir_sp','speed','acc','size','color','shotter'];
@@ -346,7 +371,8 @@ onload = () => {
     let attLocation = new Array();
     let attStride = new Array(2);
 
-    // 頂点属性を格納する配列
+    /// 頂点属性を格納する配列
+
     let position = [];
     let color = [];
     const vbo_func = [
@@ -467,6 +493,7 @@ onload = () => {
     m.multiply(pMatrix, vMatrix, tmpMatrix);
 
     let bullet_obj = {};
+    let address = {};
     let player = {x:0,y:0,dX:0,dY:0,speed:0.018,slow:2.5,size:5};
     let e = 0;
     let d = 0;
@@ -481,7 +508,7 @@ onload = () => {
         e++;
         for(i = 0; i < 10; i++) {
             n++;
-            bullet_obj[n] = ({shotter:{interval:200,info:[{count:3,rota:120,acc:0.00,type:5,size:8,st_dir:rand(0,360)}] },chCo:[{cond:1,interval:100,speed:0,color:[0.0,0.0,0.0,-0.2],dir_ac:0.1},{cond:0}] ,x:Math.cos(n*0.01)*0.4,y:Math.sin(n*0.01)*0.4,dir:e*10 + i*36,acc:0.01,speed:0.1,size:5,type:1,edir_sp:1,color:[0,0.4,0,0]})
+            bullet_obj[n] = ({shotter:{address:{type:0,count:100},interval:200,info:[{count:3,rota:120,acc:0.00,type:5,size:8,st_dir:rand(0,360)}] },chCo:[{cond:1,interval:100,speed:0,color:[0.0,0.0,0.0,-0.2],dir_ac:0.1},{cond:0}] ,x:Math.cos(n*0.01)*0.4,y:Math.sin(n*0.01)*0.4,dir:e*10 + i*36,acc:0.01,speed:0.1,size:5,type:1,edir_sp:1,color:[0,0.4,0,0]})
         }
     } ,450);
 
@@ -510,13 +537,13 @@ onload = () => {
 
     let count = 0;
     let delete_ = [];
-    let address = {};
     let exData;
     let input_key = [16,37,38,39,40,88,90];
     let input = {};
     input_key.forEach((v,i,arr) => {
         input[v] = false;
     })
+
     // 恒常ループ
     const playerClass = new Player(player);
     let bulletClass = new bulletdraw(bullet_obj, {
@@ -537,7 +564,8 @@ onload = () => {
         func: () => {
         },
         shotter:null,
-        label:'bullet'
+        label:'bullet',
+        Is_adr:false
     },
     ['count','rota','x','y','color','size','st_dir','type','shotter','parent','bNum','edir_sp','speed','acc','type','hirahira','chCo','func']);
     const all = () => {
