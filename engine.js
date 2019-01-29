@@ -179,6 +179,7 @@ onload = () => {
         let shot_obj = {};
         elementUpdate(obj,ex,shot_obj);
         if(shot_obj['address'] != null) {
+            console.log("aaa")
             shot_obj['Is_adr'] = true;
             ex['address'] = `${shot_obj['parent']}-${shot_obj['bNum']}`;
             address[`${shot_obj['parent']}-${shot_obj['bNum']}`] = {re:false,'cond':shot_obj['address']};
@@ -251,14 +252,17 @@ onload = () => {
               delete this.array[value];
             }
             for(let value of Object.keys(address)) {
-              this.address_processing(address[value],address);
+              console.log(value)
+              this.address_processing(value,address);
             }
         }
         address_processing(value,address) {
-          let obj = address['value'];
+
+          let obj = address[value];
           let ret = () => {
             switch(obj['cond']['type']) {
               default:
+              console.log(obj['cond']['type'])
               obj['cond']['count']--;
               return obj['cond']['count'];
               break;
@@ -508,7 +512,7 @@ onload = () => {
         e++;
         for(i = 0; i < 10; i++) {
             n++;
-            bullet_obj[n] = ({shotter:{address:{type:0,count:100},interval:200,info:[{count:3,rota:120,acc:0.00,type:5,size:8,st_dir:rand(0,360)}] },chCo:[{cond:1,interval:100,speed:0,color:[0.0,0.0,0.0,-0.2],dir_ac:0.1},{cond:0}] ,x:Math.cos(n*0.01)*0.4,y:Math.sin(n*0.01)*0.4,dir:e*10 + i*36,acc:0.01,speed:0.1,size:5,type:1,edir_sp:1,color:[0,0.4,0,0]})
+            bullet_obj[n] = ({shotter:{address:{'type':0,'count':100},interval:200,info:[{count:3,rota:120,acc:0.00,type:5,size:8,st_dir:rand(0,360)}] },chCo:[{cond:1,interval:100,speed:0,color:[0.0,0.0,0.0,-0.2],dir_ac:0.1},{cond:0}] ,x:Math.cos(n*0.01)*0.4,y:Math.sin(n*0.01)*0.4,dir:e*10 + i*36,acc:0.01,speed:0.1,size:5,type:1,edir_sp:1,color:[0,0.4,0,0]})
         }
     } ,450);
 
